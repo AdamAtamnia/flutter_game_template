@@ -8,6 +8,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'preloaded_banner_ad.dart';
 
 /// Allows showing ads. A facade for `package:google_mobile_ads`.
+/// provided to the rest of the app with a provider
 class AdsController {
   final MobileAds _instance;
 

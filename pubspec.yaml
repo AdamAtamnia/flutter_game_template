@@ -42,7 +42,7 @@ flutter:
 
   assets:
     - assets/images/
-    - assets/music/
+    - assets/background_sound/
     - assets/sfx/
 
   fonts:

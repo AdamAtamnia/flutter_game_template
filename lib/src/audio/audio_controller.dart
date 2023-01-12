@@ -10,14 +10,14 @@ import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 
 import '../settings/settings.dart';
-import 'songs.dart';
+import 'backgroundSounds.dart';
 import 'sounds.dart';
 
-/// Allows playing music and sound. A facade to `package:audioplayers`.
+/// Allows playing backgroundSound and sound. A facade to `package:audioplayers`.
 class AudioController {
   static final _log = Logger('AudioController');
 
-  final AudioPlayer _musicPlayer;
+  final AudioPlayer _backgroundSoundPlayer;
 
   /// This is a list of [AudioPlayer] instances which are rotated to play
   /// sound effects.
@@ -25,7 +25,7 @@ class AudioController {
 
   int _currentSfxPlayer = 0;
 
-  final Queue<Song> _playlist;
+  final Queue<BackgroundSound> _playlist;
 
   final Random _random = Random();
 
@@ -33,23 +33,23 @@ class AudioController {
 
   ValueNotifier<AppLifecycleState>? _lifecycleNotifier;
 
-  /// Creates an instance that plays music and sound.
+  /// Creates an instance that plays backgroundSound and sound.
   ///
   /// Use [polyphony] to configure the number of sound effects (SFX) that can
   /// play at the same time. A [polyphony] of `1` will always only play one
   /// sound (a new sound will stop the previous one). See discussion
   /// of [_sfxPlayers] to learn why this is the case.
   ///
-  /// Background music does not count into the [polyphony] limit. Music will
+  /// Background backgroundSound does not count into the [polyphony] limit. backgroundSound will
   /// never be overridden by sound effects because that would be silly.
   AudioController({int polyphony = 2})
       : assert(polyphony >= 1),
-        _musicPlayer = AudioPlayer(playerId: 'musicPlayer'),
+        _backgroundSoundPlayer = AudioPlayer(playerId: 'backgroundSoundPlayer'),
         _sfxPlayers = Iterable.generate(
                 polyphony, (i) => AudioPlayer(playerId: 'sfxPlayer#$i'))
             .toList(growable: false),
-        _playlist = Queue.of(List<Song>.of(songs)..shuffle()) {
-    _musicPlayer.onPlayerComplete.listen(_changeSong);
+        _playlist = Queue.of(List<BackgroundSound>.of(backgroundSounds)..shuffle()) {
+    _backgroundSoundPlayer.onPlayerComplete.listen(_changeSong);
   }
 
   /// Enables the [AudioController] to listen to [AppLifecycleState] events,
@@ -65,7 +65,7 @@ class AudioController {
 
   /// Enables the [AudioController] to track changes to settings.
   /// Namely, when any of [SettingsController.muted],
-  /// [SettingsController.musicOn] or [SettingsController.soundsOn] changes,
+  /// [SettingsController.backgroundSoundOn] or [SettingsController.soundsOn] changes,
   /// the audio controller will act accordingly.
   void attachSettings(SettingsController settingsController) {
     if (_settings == settingsController) {
@@ -77,7 +77,7 @@ class AudioController {
     final oldSettings = _settings;
     if (oldSettings != null) {
       oldSettings.muted.removeListener(_mutedHandler);
-      oldSettings.musicOn.removeListener(_musicOnHandler);
+      oldSettings.backgroundSoundOn.removeListener(_backgroundSoundOnHandler);
       oldSettings.soundsOn.removeListener(_soundsOnHandler);
     }
 
@@ -85,18 +85,18 @@ class AudioController {
 
     // Add handlers to the new settings controller
     settingsController.muted.addListener(_mutedHandler);
-    settingsController.musicOn.addListener(_musicOnHandler);
+    settingsController.backgroundSoundOn.addListener(_backgroundSoundOnHandler);
     settingsController.soundsOn.addListener(_soundsOnHandler);
 
-    if (!settingsController.muted.value && settingsController.musicOn.value) {
-      _startMusic();
+    if (!settingsController.muted.value && settingsController.backgroundSoundOn.value) {
+      _startBackgroundSound();
     }
   }
 
   void dispose() {
     _lifecycleNotifier?.removeListener(_handleAppLifecycle);
     _stopAllSound();
-    _musicPlayer.dispose();
+    _backgroundSoundPlayer.dispose();
     for (final player in _sfxPlayers) {
       player.dispose();
     }
@@ -148,7 +148,7 @@ class AudioController {
     // Put the song that just finished playing to the end of the playlist.
     _playlist.addLast(_playlist.removeFirst());
     // Play the next song.
-    _playFirstSongInPlaylist();
+    _playFirstBackgroundSoundInPlaylist();
   }
 
   void _handleAppLifecycle() {
@@ -158,8 +158,8 @@ class AudioController {
         _stopAllSound();
         break;
       case AppLifecycleState.resumed:
-        if (!_settings!.muted.value && _settings!.musicOn.value) {
-          _resumeMusic();
+        if (!_settings!.muted.value && _settings!.backgroundSoundOn.value) {
+          _resumeBackgroundSound();
         }
         break;
       case AppLifecycleState.inactive:
@@ -168,15 +168,15 @@ class AudioController {
     }
   }
 
-  void _musicOnHandler() {
-    if (_settings!.musicOn.value) {
-      // Music got turned on.
+  void _backgroundSoundOnHandler() {
+    if (_settings!.backgroundSoundOn.value) {
+      // backgroundSound got turned on.
       if (!_settings!.muted.value) {
-        _resumeMusic();
+        _resumeBackgroundSound();
       }
     } else {
-      // Music got turned off.
-      _stopMusic();
+      // backgroundSound got turned off.
+      _stopBackgroundSound();
     }
   }
 
@@ -186,45 +186,45 @@ class AudioController {
       _stopAllSound();
     } else {
       // All sound just got un-muted.
-      if (_settings!.musicOn.value) {
-        _resumeMusic();
+      if (_settings!.backgroundSoundOn.value) {
+        _resumeBackgroundSound();
       }
     }
   }
 
-  Future<void> _playFirstSongInPlaylist() async {
+  Future<void> _playFirstBackgroundSoundInPlaylist() async {
     _log.info(() => 'Playing ${_playlist.first} now.');
-    await _musicPlayer.play(AssetSource('music/${_playlist.first.filename}'));
+    await _backgroundSoundPlayer.play(AssetSource('background_sound/${_playlist.first.filename}'));
   }
 
-  Future<void> _resumeMusic() async {
-    _log.info('Resuming music');
-    switch (_musicPlayer.state) {
+  Future<void> _resumeBackgroundSound() async {
+    _log.info('Resuming backgroundSound');
+    switch (_backgroundSoundPlayer.state) {
       case PlayerState.paused:
-        _log.info('Calling _musicPlayer.resume()');
+        _log.info('Calling _backgroundSoundPlayer.resume()');
         try {
-          await _musicPlayer.resume();
+          await _backgroundSoundPlayer.resume();
         } catch (e) {
           // Sometimes, resuming fails with an "Unexpected" error.
           _log.severe(e);
-          await _playFirstSongInPlaylist();
+          await _playFirstBackgroundSoundInPlaylist();
         }
         break;
       case PlayerState.stopped:
-        _log.info("resumeMusic() called when music is stopped. "
-            "This probably means we haven't yet started the music. "
+        _log.info("resumeBackgroundSound() called when backgroundSound is stopped. "
+            "This probably means we haven't yet started the backgroundSound. "
             "For example, the game was started with sound off.");
-        await _playFirstSongInPlaylist();
+        await _playFirstBackgroundSoundInPlaylist();
         break;
       case PlayerState.playing:
-        _log.warning('resumeMusic() called when music is playing. '
+        _log.warning('resumeBackgroundSound() called when backgroundSound is playing. '
             'Nothing to do.');
         break;
       case PlayerState.completed:
-        _log.warning('resumeMusic() called when music is completed. '
-            "Music should never be 'completed' as it's either not playing "
+        _log.warning('resumeBackgroundSound() called when backgroundSound is completed. '
+            "backgroundSound should never be 'completed' as it's either not playing "
             "or looping forever.");
-        await _playFirstSongInPlaylist();
+        await _playFirstBackgroundSoundInPlaylist();
         break;
     }
   }
@@ -237,24 +237,24 @@ class AudioController {
     }
   }
 
-  void _startMusic() {
-    _log.info('starting music');
-    _playFirstSongInPlaylist();
+  void _startBackgroundSound() {
+    _log.info('starting backgroundSound');
+    _playFirstBackgroundSoundInPlaylist();
   }
 
   void _stopAllSound() {
-    if (_musicPlayer.state == PlayerState.playing) {
-      _musicPlayer.pause();
+    if (_backgroundSoundPlayer.state == PlayerState.playing) {
+      _backgroundSoundPlayer.pause();
     }
     for (final player in _sfxPlayers) {
       player.stop();
     }
   }
 
-  void _stopMusic() {
-    _log.info('Stopping music');
-    if (_musicPlayer.state == PlayerState.playing) {
-      _musicPlayer.pause();
+  void _stopBackgroundSound() {
+    _log.info('Stopping backgroundSound');
+    if (_backgroundSoundPlayer.state == PlayerState.playing) {
+      _backgroundSoundPlayer.pause();
     }
   }
 }

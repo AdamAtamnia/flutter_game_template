@@ -200,6 +200,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return AppLifecycleObserver(
       child: MultiProvider(
         providers: [
@@ -213,6 +214,8 @@ class MyApp extends StatelessWidget {
           Provider<GamesServicesController?>.value(
               value: gamesServicesController),
           Provider<AdsController?>.value(value: adsController),
+          // change notifier allows to listen to changes (when it calls notifyListeners())
+          // normal provider just does not have this feature the class can be any class
           ChangeNotifierProvider<InAppPurchaseController?>.value(
               value: inAppPurchaseController),
           Provider<SettingsController>(
@@ -225,7 +228,7 @@ class MyApp extends StatelessWidget {
               AudioController>(
             // Ensures that the AudioController is created on startup,
             // and not "only when it's needed", as is default behavior.
-            // This way, music starts immediately.
+            // This way, backgroundSound starts immediately.
             lazy: false,
             create: (context) => AudioController()..initialize(),
             update: (context, settings, lifecycleNotifier, audio) {

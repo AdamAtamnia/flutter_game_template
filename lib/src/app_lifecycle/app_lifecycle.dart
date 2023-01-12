@@ -5,7 +5,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
-
+// provides a value notifier of lifecycle
+// example used to stop the sound
 class AppLifecycleObserver extends StatefulWidget {
   final Widget child;
 
