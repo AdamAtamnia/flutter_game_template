@@ -52,10 +52,10 @@ class SettingsScreen extends StatelessWidget {
             ),
             ValueListenableBuilder<bool>(
               valueListenable: settings.backgroundSoundOn,
-              builder: (context, musicOn, child) => _SettingsLine(
-                'Music',
-                Icon(musicOn ? Icons.music_note : Icons.music_off),
-                onSelected: () => settings.toggleMusicOn(),
+              builder: (context, backgroundSoundOn, child) => _SettingsLine(
+                'Background Sound',
+                Icon(backgroundSoundOn ? Icons.surround_sound : Icons.volume_off),
+                onSelected: () => settings.toggleBackgroundSoundOn(),
               ),
             ),
             Consumer<InAppPurchaseController?>(

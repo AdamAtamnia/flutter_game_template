@@ -11,7 +11,7 @@ import 'persistence/settings_persistence.dart';
 class SettingsController {
   final SettingsPersistence _persistence;
 
-  /// Whether or not the sound is on at all. This overrides both music
+  /// Whether or not the sound is on at all. This overrides both BackgroundSound
   /// and sound.
   ValueNotifier<bool> muted = ValueNotifier(false);
 
@@ -35,7 +35,7 @@ class SettingsController {
           .getMuted(defaultValue: kIsWeb)
           .then((value) => muted.value = value),
       _persistence.getSoundsOn().then((value) => soundsOn.value = value),
-      _persistence.getMusicOn().then((value) => backgroundSoundOn.value = value),
+      _persistence.getBackgroundSoundOn().then((value) => backgroundSoundOn.value = value),
       _persistence.getPlayerName().then((value) => playerName.value = value),
     ]);
   }
@@ -45,9 +45,9 @@ class SettingsController {
     _persistence.savePlayerName(playerName.value);
   }
 
-  void toggleMusicOn() {
+  void toggleBackgroundSoundOn() {
     backgroundSoundOn.value = !backgroundSoundOn.value;
-    _persistence.saveMusicOn(backgroundSoundOn.value);
+    _persistence.saveBackgroundSoundOn(backgroundSoundOn.value);
   }
 
   void toggleMuted() {

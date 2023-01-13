@@ -49,7 +49,7 @@ class AudioController {
                 polyphony, (i) => AudioPlayer(playerId: 'sfxPlayer#$i'))
             .toList(growable: false),
         _playlist = Queue.of(List<BackgroundSound>.of(backgroundSounds)..shuffle()) {
-    _backgroundSoundPlayer.onPlayerComplete.listen(_changeSong);
+    _backgroundSoundPlayer.onPlayerComplete.listen(_changeBackgroundSound);
   }
 
   /// Enables the [AudioController] to listen to [AppLifecycleState] events,
@@ -143,11 +143,11 @@ class AudioController {
     _currentSfxPlayer = (_currentSfxPlayer + 1) % _sfxPlayers.length;
   }
 
-  void _changeSong(void _) {
-    _log.info('Last song finished playing.');
-    // Put the song that just finished playing to the end of the playlist.
+  void _changeBackgroundSound(void _) {
+    _log.info('Last BackgroundSound finished playing.');
+    // Put the BackgroundSound that just finished playing to the end of the playlist.
     _playlist.addLast(_playlist.removeFirst());
-    // Play the next song.
+    // Play the next BackgroundSound.
     _playFirstBackgroundSoundInPlaylist();
   }
 

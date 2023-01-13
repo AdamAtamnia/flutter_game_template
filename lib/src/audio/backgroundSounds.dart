@@ -5,9 +5,7 @@
 const Set<BackgroundSound> backgroundSounds = {
   // Filenames with whitespace break package:audioplayers on iOS
   // (as of February 2022), so we use no whitespace.
-  BackgroundSound('Mr_Smith-Azul.mp3', 'Azul', artist: 'Mr Smith'),
-  BackgroundSound('Mr_Smith-Sonorus.mp3', 'Sonorus', artist: 'Mr Smith'),
-  BackgroundSound('Mr_Smith-Sunday_Solitude.mp3', 'SundaySolitude', artist: 'Mr Smith'),
+  BackgroundSound('Water_2.wav', 'flowOfWater'),
 };
 
 class BackgroundSound {
@@ -20,5 +18,5 @@ class BackgroundSound {
   const BackgroundSound(this.filename, this.name, {this.artist});
 
   @override
-  String toString() => 'Song<$filename>';
+  String toString() => 'BackgroundSound<$filename>';
 }

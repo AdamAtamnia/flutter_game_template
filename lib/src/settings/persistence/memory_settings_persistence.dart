@@ -7,7 +7,7 @@ import 'settings_persistence.dart';
 /// An in-memory implementation of [SettingsPersistence].
 /// Useful for testing.
 class MemoryOnlySettingsPersistence implements SettingsPersistence {
-  bool musicOn = true;
+  bool backgroundSoundOn = false;
 
   bool soundsOn = true;
 
@@ -16,7 +16,7 @@ class MemoryOnlySettingsPersistence implements SettingsPersistence {
   String playerName = 'Player';
 
   @override
-  Future<bool> getMusicOn() async => musicOn;
+  Future<bool> getBackgroundSoundOn() async => backgroundSoundOn;
 
   @override
   Future<bool> getMuted({required bool defaultValue}) async => muted;
@@ -28,7 +28,7 @@ class MemoryOnlySettingsPersistence implements SettingsPersistence {
   Future<bool> getSoundsOn() async => soundsOn;
 
   @override
-  Future<void> saveMusicOn(bool value) async => musicOn = value;
+  Future<void> saveBackgroundSoundOn(bool value) async => backgroundSoundOn = value;
 
   @override
   Future<void> saveMuted(bool value) async => muted = value;
