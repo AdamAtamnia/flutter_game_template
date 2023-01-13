@@ -1,8 +1,10 @@
-A starter game in Flutter with all the bells and whistles
-of a mobile (iOS & Android) game including the following features:
+Taken from https://github.com/flutter/samples/tree/main/game_template
+
+A starter game in Flutter with all the features
+a mobile (iOS & Android) game needs including the following features:
 
 - sound
-- music
+- background music
 - main menu screen
 - settings
 - ads (AdMob)

@@ -65,13 +65,27 @@ class _PlaySessionScreenState extends State<PlaySessionScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: InkResponse(
-                        onTap: () => GoRouter.of(context).push('/settings'),
-                        child: Image.asset(
-                          'assets/images/settings.png',
-                          semanticLabel: 'Settings',
+                    SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            InkResponse(
+                              onTap: () => GoRouter.of(context).go('/play'),
+                              child: Image.asset(
+                                'assets/images/back.png',
+                                semanticLabel: 'Back',
+                              ),
+                            ),
+                            InkResponse(
+                              onTap: () => GoRouter.of(context).push('/settings'),
+                              child: Image.asset(
+                                'assets/images/settings.png',
+                                semanticLabel: 'Settings',
+                              ),
+                            ),
+                          ]
                         ),
                       ),
                     ),
@@ -89,16 +103,6 @@ class _PlaySessionScreenState extends State<PlaySessionScreen> {
                       ),
                     ),
                     const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () => GoRouter.of(context).go('/play'),
-                          child: const Text('Back'),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
